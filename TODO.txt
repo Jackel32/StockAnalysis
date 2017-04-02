@@ -1,0 +1,2 @@
+Only output news within date range
+Sort output by date
