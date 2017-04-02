@@ -83,10 +83,11 @@ def parse_stocks(line, n, symbols):
 #
 #
 def read_n_data(n, num_lines):
-    symbols = ""
     while True:
+        symbols = ""
+
         next_n_lines = list(islice(f, n))
-        print next_n_lines
+        #print next_n_lines
         count = 0
         if not next_n_lines:
             break
@@ -97,16 +98,16 @@ def read_n_data(n, num_lines):
             #print count
             if count == num_lines:
                 symbols += item
-            #elif line < count:
-             #   print line
             else:
                 symbols += item + ","
             #print symbols
             #parse_data(symbols)
         #symbols = ""
-        print symbols
-        #parse_data(symbols)
-        yield symbols
+        #print symbols
+        try:
+            parse_data(symbols)
+        except:
+            print "The End"
 
 
 def read_all_data(num_lines):
@@ -128,9 +129,31 @@ def read_all_data(num_lines):
     yield symbols
 
 def parse_data(symbols):
-    Quote_str = json.dumps(quotes.getQuotes(symbols), indent=2);
-    f = open('output.txt','w')
-    print >> f, Quote_str
+    a = []
+    filename = 'output.txt'
+    if not os.path.isfile(filename):
+        a.append(quotes.getQuotes(symbols))
+        with open(filename, mode='w') as f:
+            f.write(json.dumps(quotes.getQuotes(symbols), indent=2))
+    else:
+        with open(filename) as feedsjson:
+            feeds = json.load(feedsjson)
+        try:
+            feeds.append(quotes.getQuotes(symbols))
+            #print symbols
+        except:
+            #print symbols
+            print "All Done"
+        #finally:
+            #if symbols >= 0:
+                #print len(symbols)
+        with open(filename, mode='w') as f:
+            f.write(json.dumps(feeds, indent=2))
+
+    
+    #Quote_str = json.dumps(quotes.getQuotes(symbols), indent=2);
+    #f = open('output.txt','w')
+    #print >> f, Quote_str
     #print Quote_str
 
 
@@ -141,17 +164,11 @@ if __name__ == '__main__':
         filename = "symbols(TEST).data"
 
         num_lines = sum(1 for line in open(filename))
+        count = 0
         with open(filename, 'r') as f:
-            symbols = ""
-            count = 0
-            chunk = 2
-            while count <= num_lines:
-                count += chunk
-                print count
-                #symbols = read_data(num_lines)
-                symbols = read_n_data(count, num_lines)
-                #print symbols
-                parse_data(symbols)
+            chunk = 100
+            parse_data(read_n_data(chunk, num_lines))
+            #symbols = ""
 
 
 
