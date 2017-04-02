@@ -34,6 +34,8 @@ def parse_stocks(line, n, symbols):
         symbols += line
         print line, n, symbols
         parse_stocks(line, n-1, symbols)
+
+
         
 ##def buildPreMarketURL(symbol, exchange=':NASDAQ'):
 ##    return 'http://finance.google.com/finance/info?client=ig&q=' \
@@ -76,7 +78,7 @@ def parse_stocks(line, n, symbols):
 
 # Start with 0 size and empty symbols
 # pull in 1k worth of data and parse it.
-# empty size and symbols... rinse and repeast
+# empty size and symbols... rinse and repeat
 #
 #
 #
@@ -84,24 +86,25 @@ def read_n_data(n, num_lines):
     symbols = ""
     while True:
         next_n_lines = list(islice(f, n))
+        print next_n_lines
         count = 0
         if not next_n_lines:
             break
         for line in next_n_lines:
-            print line
+            #print line
             item = line.rstrip("\n\r");
             count = count + 1
-            print count
-            if line == count or (line == next_n_lines and next_n_lines > num_lines):
+            #print count
+            if count == num_lines:
                 symbols += item
             #elif line < count:
              #   print line
             else:
                 symbols += item + ","
-            print symbols
-            parse_data(symbols)
-        symbols = ""
-        #print symbols
+            #print symbols
+            #parse_data(symbols)
+        #symbols = ""
+        print symbols
         #parse_data(symbols)
         yield symbols
 
@@ -111,7 +114,7 @@ def read_all_data(num_lines):
     for line in range(num_lines):
         item = f.readline();
         item = item.rstrip("\n\r");
-        if line == num_lines-1:
+        if line == num_lines:
             symbols += item
         else:
             symbols += item + ","
@@ -137,16 +140,18 @@ if __name__ == '__main__':
     except:
         filename = "symbols(TEST).data"
 
-
         num_lines = sum(1 for line in open(filename))
-        
         with open(filename, 'r') as f:
             symbols = ""
-
-            #symbols = read_data(num_lines)
-            symbols = read_n_data(100, num_lines)
-            #print symbols
-            parse_data(symbols)
+            count = 0
+            chunk = 2
+            while count <= num_lines:
+                count += chunk
+                print count
+                #symbols = read_data(num_lines)
+                symbols = read_n_data(count, num_lines)
+                #print symbols
+                parse_data(symbols)
 
 
 

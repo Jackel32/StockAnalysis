@@ -49,6 +49,7 @@ def buildQuoteURL(symbols):
 
 def requestQuote(symbols):
     url = buildQuoteURL(symbols)
+    print url
     req = Request(url)
     resp = urlopen(req)
     # remove special symbols such as the pound symbol
